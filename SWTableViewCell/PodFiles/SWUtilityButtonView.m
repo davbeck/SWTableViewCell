@@ -9,6 +9,7 @@
 #import "SWUtilityButtonView.h"
 #import "SWUtilityButtonTapGestureRecognizer.h"
 #import "Constants.h"
+#import "SWTableViewCell.h"
 
 @implementation SWUtilityButtonView
 
@@ -19,9 +20,9 @@
     self = [super init];
     
     if (self) {
+        self.parentCell = parentCell;
         self.utilityButtons = utilityButtons;
         self.utilityButtonWidth = [self calculateUtilityButtonWidth];
-        self.parentCell = parentCell;
         self.utilityButtonSelector = utilityButtonSelector;
     }
     
@@ -33,9 +34,9 @@
     self = [super initWithFrame:frame];
     
     if (self) {
+        self.parentCell = parentCell;
         self.utilityButtons = utilityButtons;
         self.utilityButtonWidth = [self calculateUtilityButtonWidth];
-        self.parentCell = parentCell;
         self.utilityButtonSelector = utilityButtonSelector;
     }
     
@@ -47,6 +48,10 @@
 - (CGFloat)calculateUtilityButtonWidth
 {
     CGFloat buttonWidth = kUtilityButtonWidthDefault;
+    if ([self.parentCell.delegate respondsToSelector:@selector(swipeableTableViewCellButtonWidth:)]) {
+        buttonWidth = [self.parentCell.delegate swipeableTableViewCellButtonWidth:self.parentCell];
+    }
+    
     if (buttonWidth * _utilityButtons.count > kUtilityButtonsWidthMax)
     {
         CGFloat buffer = (buttonWidth * _utilityButtons.count) - kUtilityButtonsWidthMax;
@@ -57,6 +62,10 @@
 
 - (CGFloat)utilityButtonsWidth
 {
+    if ([self.parentCell.delegate respondsToSelector:@selector(swipeableTableViewCellGutterWidth:)]) {
+        return [self.parentCell.delegate swipeableTableViewCellGutterWidth:self.parentCell];
+    }
+    
     return (_utilityButtons.count * _utilityButtonWidth);
 }
 
@@ -65,8 +74,8 @@
     NSUInteger utilityButtonsCounter = 0;
     for (UIButton *utilityButton in _utilityButtons)
     {
-        CGFloat utilityButtonXCord = 0;
-        if (utilityButtonsCounter >= 1) utilityButtonXCord = _utilityButtonWidth * utilityButtonsCounter;
+        CGFloat utilityButtonXCord = [self utilityButtonsWidth] - _utilityButtonWidth * _utilityButtons.count;
+        utilityButtonXCord += _utilityButtonWidth * utilityButtonsCounter;
         [utilityButton setFrame:CGRectMake(utilityButtonXCord, 0, _utilityButtonWidth, CGRectGetHeight(self.bounds))];
         [utilityButton setTag:utilityButtonsCounter];
         SWUtilityButtonTapGestureRecognizer *utilityButtonTapGestureRecognizer = [[SWUtilityButtonTapGestureRecognizer alloc] initWithTarget:_parentCell
@@ -83,8 +92,8 @@
     for (NSUInteger utilityButtonsCounter = 0; utilityButtonsCounter < _utilityButtons.count; utilityButtonsCounter++)
     {
         UIButton *utilityButton = (UIButton *)_utilityButtons[utilityButtonsCounter];
-        CGFloat utilityButtonXCord = 0;
-        if (utilityButtonsCounter >= 1) utilityButtonXCord = _utilityButtonWidth * utilityButtonsCounter;
+        CGFloat utilityButtonXCord = [self utilityButtonsWidth] - _utilityButtonWidth * _utilityButtons.count;
+        utilityButtonXCord += _utilityButtonWidth * utilityButtonsCounter;
         [utilityButton setFrame:CGRectMake(utilityButtonXCord, 0, _utilityButtonWidth, height)];
     }
 }
