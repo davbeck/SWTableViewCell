@@ -30,6 +30,8 @@ typedef enum {
 - (void)swipeableTableViewCell:(SWTableViewCell *)cell scrollingToState:(SWCellState)state;
 - (BOOL)swipeableTableViewCellShouldHideUtilityButtonsOnSwipe:(SWTableViewCell *)cell;
 - (BOOL)swipeableTableViewCell:(SWTableViewCell *)cell canSwipeToState:(SWCellState)state;
+- (CGFloat)swipeableTableViewCellButtonWidth:(SWTableViewCell *)cell;
+- (CGFloat)swipeableTableViewCellGutterWidth:(SWTableViewCell *)cell;
 
 @end
 
